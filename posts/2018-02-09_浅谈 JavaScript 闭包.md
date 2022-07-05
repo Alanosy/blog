@@ -1,30 +1,30 @@
 ---
-title: C语言_2_day
-date: 2022-07-04 17:25:09
-categories:
-- 笔记
-tags:
-- C语言
+title: C语言_3_day
+date: 2018-02-09 10:23:19
+categories: [笔记]
+tags: [js]
 cover: 
-pageview: 742
+pageview: 281
 ---
+
+
 ## 语句
 if分支语句
 ```
 if(表达式)
-	语句;
+    语句;
 
 
 
 if(表达式)
-	语句1;
+    语句1;
 else
-	语句2;
+    语句2;
 
 if(表达式)
-	语句1;
+    语句1;
 else if(表达式2)
-	语句2;
+    语句2;
 else
 语句3;
 ```
@@ -33,29 +33,29 @@ while循环语句
 ```
 while(表达式)
 {
-	语句；
-	表达式调整语句;
+    语句；
+    表达式调整语句;
 }
 ```
 do...while语句
 ```
 do
-	语句;
+    语句;
 while(表达式)
 ```
 switch语句
 ```
 switch(表达式)
 {
-	case 常量表达式1:语句或程序块1
-	case 常量表达式2:语句或程序块2
-	default:语句或程序块n+1
+    case 常量表达式1:语句或程序块1
+    case 常量表达式2:语句或程序块2
+    default:语句或程序块n+1
 }
 ```
 for循环
 ```
 for(表达式1;表达式2;表达式3)
-	循环体
+    循环体
 ```
 break语句
 
