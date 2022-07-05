@@ -1,7 +1,12 @@
 ---
-title: C语言自学_4_day
-date: 2022-06-30 07:52:26
+title: C语言_4_day
+date: 2022-07-04 17:25:09
+categories:
+- 笔记
 tags:
+- C语言
+cover: 
+pageview: 740
 ---
 ## 字符串理
 字符串处理头文件

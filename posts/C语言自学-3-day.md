@@ -1,7 +1,12 @@
 ---
-title: C语言自学_3_day
-date: 2022-06-29 15:10:17
+title: C语言_3_day
+date: 2022-07-04 17:25:09
+categories:
+- 笔记
 tags:
+- C语言
+cover: 
+pageview: 740
 ---
 ## 算法
 一个程序应该包括所涉及的对象的描述和处理过程的描述

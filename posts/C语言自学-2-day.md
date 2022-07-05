@@ -1,7 +1,12 @@
 ---
-title: C语言自学_2_day
-date: 2022-06-28 02:53:52
+title: C语言_2_day
+date: 2022-07-04 17:25:09
+categories:
+- 笔记
 tags:
+- C语言
+cover: 
+pageview: 740
 ---
 ## 语句
 if分支语句
