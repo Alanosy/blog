@@ -13,7 +13,7 @@ export default function Links({ links }: { links: LinkType[] }) {
           <div className={PagesStyle.linksNote}>
             如果... <br />
             你也想被挂在墙上... <br />
-            可以点击<a href='https://github.com/miiiku/blog-links'>[这里]</a>提交PR跟我PY... <br />
+            可以点击<a href='https://github.com/alanosy/blog-links'>[这里]</a>提交PR跟我PY... <br />
             如果... <br />
             你不是GITHUB用户... <br />
             也可以发送邮件给我... <br />
