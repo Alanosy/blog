@@ -27,10 +27,10 @@ excerpt: 通过rss记录小伙伴文章，交换友链的要求以及提供申�
 > 若要添加友链，请先添加本站友链，并按以下格式在下方评论区留言
 
 ```yaml
-- 网站名: 浩瀚星河
+- 网站名: Alan
   网站简介: 代码，日常，生活
-  网址: https://haohanxinghe.com
-  头像: https://haohanxinghe.com/assets/images/avatar.webp
+  网址: https://alan.org.cn
+  头像: https://alan.org.cn/assets/images/avatar.jpeg
 ```
 
 {% endfolding %}

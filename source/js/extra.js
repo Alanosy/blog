@@ -87,4 +87,32 @@ function cleanCache() {
   location.reload();
 }
 
+function collectPostUrls() {
+  var postElements = document.querySelectorAll('.post-card'); // 假设文章链接使用了.post-link 类
+  var posts = [];
+  postElements.forEach(function(element) {
+    posts.push(element.href);
+  });
+  return posts;
+}
+
+function toRandomPost() {
+  var posts = collectPostUrls();
+  if (posts.length === 0) {
+    alert('No posts available.');
+    return;
+  }
+  var randomIndex = Math.floor(Math.random() * posts.length);
+  var randomPost = posts[randomIndex];
+  if (window.pjax) {
+    try {
+      pjax.loadUrl(randomPost);
+    } catch (error) {
+      console.error('Error loading post with pjax:', error);
+      window.open(randomPost, "_self");
+    }
+  } else {
+      window.open(randomPost, "_self");
+  }
+}
 document.addEventListener("DOMContentLoaded", initSetting);
