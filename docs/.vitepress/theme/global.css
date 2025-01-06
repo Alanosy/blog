@@ -1,0 +1,35 @@
+:root {
+  --vp-c-brand: #b575e3;
+}
+
+/* 图片缩放 */
+.medium-zoom-overlay {
+  background-color: var(--vp-c-bg) !important;
+  z-index: 100;
+}
+
+.medium-zoom-overlay ~ img {
+  z-index: 101;
+}
+
+.medium-zoom--opened .medium-zoom-overlay {
+  opacity: 0.9 !important;
+}
+
+/* 基础滚动条样式 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 4px;
+  opacity: 0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(200, 155, 155, 0);
+  border-radius: 3em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c3c0c1;
+  border-radius: 2em;
+  opacity: 1;
+}

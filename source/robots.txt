@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alan.org.cn/sitemap.xml
+Sitemap: https://alan.org.cn/baidusitemap.xml

@@ -1,0 +1,55 @@
+{
+  "name": "hexo-site",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "hexo generate && gulp && vitepress build docs && rollup -c",
+    "clean": "hexo clean",
+    "dev": "hexo clean & hexo server",
+    "deploy": "hexo deploy",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "hexo": {
+    "version": "7.3.0"
+  },
+  "dependencies": {
+    "@xiandanin/hexo-generator-baidu-sitemap": "^2.0.1",
+    "cheerio": "^1.0.0",
+    "gulp": "^5.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-uglify": "^3.0.2",
+    "hexo": "^7.3.0",
+    "hexo-filter-nofollow": "^2.0.2",
+    "hexo-fs": "^4.1.3",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-index": "^4.0.0",
+    "hexo-generator-sitemap": "^3.0.1",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-graph": "^1.0.11",
+    "hexo-lazyload-image": "^1.1.2",
+    "hexo-neat": "^1.0.9",
+    "hexo-pagination": "^4.0.0",
+    "hexo-related-popular-posts": "^5.0.1",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^6.3.0",
+    "hexo-renderer-stylus": "^3.0.1",
+    "hexo-safego": "^2.0.1",
+    "hexo-server": "^3.0.0",
+    "hexo-util": "^3.3.0",
+    "hexo-wordcount": "^6.0.1",
+    "moment": "^2.30.1",
+    "tslib": "^2.8.0",
+    "vitepress-markdown-timeline": "^1.2.2",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "medium-zoom": "^1.1.0",
+    "rollup": "^4.29.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "vitepress": "^1.5.0"
+  }
+}
