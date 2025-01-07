@@ -193,7 +193,7 @@ copycode:
 #     js: /vendor/js/artalk.js
 #     server: https://comment.codepzj.cn # 后端服务地址
 #     placeholder: "此时无声胜有声"
-#     site: 浩瀚星河
+#     site: Alan
 #     darkMode: auto
 # 评论
 comments:

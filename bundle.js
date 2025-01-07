@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   // 控制台信息
   console.log(
-    "%c Theme Stellar Version 1.29.1 浩瀚星河祝您每天开心 %c",
+    "%c Theme Stellar Version 1.29.1 Alan祝您每天开心 %c",
     "color:#fff;background:linear-gradient(90deg,#6a5acd,#87cefa);padding:5px 10px;",
     "color:#000;background:linear-gradient(90deg,#87cefa,#ffffff);padding:5px 10px;"
   );

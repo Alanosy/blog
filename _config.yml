@@ -9,8 +9,8 @@ subtitle: "代码,日常,人生 | alan.org.cn"
 avatar: /assets/images/avatar.jpeg
 author: Alan
 email: fignet@163.com
-description: "浩瀚星河的个人博客，分享技术与生活。“无人扶我青云志，我自踏雪至山巅🧐”。浩瀚星河是一名开源爱好者，结识了许多志同道合的朋友。这个博客记录了他在生活和技术学习中的点滴经历，充满启发与思考。网站界面简洁美观，内容丰富实用，人气互动活跃，涵盖了编程、生活、学习等多个领域，为读者提供了卓越的阅读体验。"
-keywords: "浩瀚星河,浩瀚星河的博客,浩瀚星河的blog,haohanxinghe,技术分享,生活思考,产品思考,设计开发,hexo,前端,web,js,html,css,vue,react,angular,node,python,java,go,rust,swift,php,mysql,mongodb,redis,linux,docker,kubernetes,git,github,markdown,seo,webpush,web-push,web-push-notification,web-push-api,web-push-protocol,web-push-service-worker,web-push-api-service-worker,web-push-api-service-worker-protocol,web-push-api-service-worker-specification,web-push-api-service-worker-specification-draft,web-push-api-service-worker-specification-draft-01,web-push-api-service-worker-specification-draft-02,web-push-api-service-worker-specification-draft-03,web-push-api-service-worker-specification-draft-04,web-push-api-service-worker-specification-draft"
+description: "Alan的个人博客，分享技术与生活。“无人扶我青云志，我自踏雪至山巅🧐”。Alan是一名开源爱好者，结识了许多志同道合的朋友。这个博客记录了他在生活和技术学习中的点滴经历，充满启发与思考。网站界面简洁美观，内容丰富实用，人气互动活跃，涵盖了编程、生活、学习等多个领域，为读者提供了卓越的阅读体验。"
+keywords: "Alan,Alan的博客,Alan的blog,alan.org.cn,技术分享,生活思考,产品思考,设计开发,hexo,前端,web,js,html,css,vue,react,angular,node,python,java,go,rust,swift,php,mysql,mongodb,redis,linux,docker,kubernetes,git,github,markdown,seo,webpush,web-push,web-push-notification,web-push-api,web-push-protocol,web-push-service-worker,web-push-api-service-worker,web-push-api-service-worker-protocol,web-push-api-service-worker-specification,web-push-api-service-worker-specification-draft,web-push-api-service-worker-specification-draft-01,web-push-api-service-worker-specification-draft-02,web-push-api-service-worker-specification-draft-03,web-push-api-service-worker-specification-draft-04,web-push-api-service-worker-specification-draft"
 favicon: /favicon.ico
 
 # 多语言
@@ -174,7 +174,7 @@ hexo_safego:
     - "/posts/"
     - "/wiki/"
   avatar: /assets/images/avatar.jpg # 头像图片链接
-  title: "浩瀚星河" # 标题
+  title: "Alan" # 标题
   subtitle: "安全中心" # 副标题
   darkmode: true # 是否启用夜间模式
   debug: false # 是否启用调试模式，开启后会输出详细的调试信息

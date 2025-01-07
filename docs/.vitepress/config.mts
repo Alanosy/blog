@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 import timeline from "vitepress-markdown-timeline";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "浩瀚星河的文档",
+  title: "Alan的文档",
   description: "实用的学习笔记、项目教程",
   lang: "zh-Hans",
   themeConfig: {
@@ -81,7 +81,7 @@ export default defineConfig({
     },
     footer: {
       message: "基于 MIT 许可发布",
-      copyright: `版权所有 © 2024-${new Date().getFullYear()} 浩瀚星河`,
+      copyright: `版权所有 © 2024-${new Date().getFullYear()} Alan`,
     },
     docFooter: {
       prev: "上一页",
