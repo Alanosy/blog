@@ -132,7 +132,7 @@ feed:
   limit: false
   content: true
   order_by: -date
-  icon: /assets/images/avatar.jpg
+  icon: /assets/images/avatar.jpeg
   autodiscovery: true
   template:
     - ./source/custom.xml
@@ -173,7 +173,7 @@ hexo_safego:
   apply_pages: # 生效页面路径列表，只有在这些页面上才会对链接进行处理
     - "/posts/"
     - "/wiki/"
-  avatar: /assets/images/avatar.jpg # 头像图片链接
+  avatar: /assets/images/avatar.jpeg # 头像图片链接
   title: "Alan" # 标题
   subtitle: "安全中心" # 副标题
   darkmode: true # 是否启用夜间模式

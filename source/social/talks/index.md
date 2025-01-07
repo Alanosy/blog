@@ -19,7 +19,7 @@ excerpt: 博客的说说页面，包含Github，Telegram
 
 <!-- tab Telegram -->
 
-{% timeline api:https://tgtalk.codepzj.cn/?cid=0&tag=talk&usetgclassification=true type:memos avatar:/assets/images/avatar.jpg %}
+{% timeline api:https://tgtalk.codepzj.cn/?cid=0&tag=talk&usetgclassification=true type:memos avatar:/assets/images/avatar.jpeg %}
 {% endtimeline %}
 
 {% endtabs %}

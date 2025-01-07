@@ -2,7 +2,7 @@
 menu_id: social
 title: 小伙伴们 & 朋友文章
 leftbar: social, recent
-rightbar: toc
+rightbar: friends_apply, classify, tagcloud
 updated: 2024-08-20 00:00:00
 excerpt: 通过rss记录小伙伴文章，交换友链的要求以及提供申请友链的入口。
 ---
