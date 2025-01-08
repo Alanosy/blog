@@ -10,7 +10,7 @@ breadcrumb: false
 header: false
 ---
 
-{% banner 耶 bg:/assets/banner/friends.webp %}
+{% banner bg:/assets/banner/friends.webp %}
 {% endbanner %}
 
 {% navbar active:2 [关于](/social/about) [联系我](/social/contact-me/) [我的&nbsp;Github](/social/my-github/) %}
@@ -20,4 +20,4 @@ header: false
 
 > **如果你很长时间都没有收到我的回复，先检查一下你的垃圾邮件箱！**
 
-{% copy Mail fignet@163.com %}
+{% copy fignet@163.com %}

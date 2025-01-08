@@ -10,7 +10,7 @@ comments: false
 breadcrumb: false
 header: false
 ---
-{% banner 耶 bg:/assets/banner/friends.webp %}
+{% banner bg:/assets/banner/friends.webp %}
 {% endbanner %}
 
 

@@ -10,7 +10,7 @@ breadcrumb: false
 header: false
 ---
 
-{% banner 耶 bg:/assets/banner/friends.webp %}
+{% banner bg:/assets/banner/friends.webp %}
 {% endbanner %}
 
 
@@ -19,6 +19,6 @@ header: false
 
 ![Anurag's GitHub stats](https://stats.alan.org.cn/api/?username=alanosy\&show_icons=true\&title_color=fff\&icon_color=79ff97\&text_color=9f9f9f\&bg_color=151515)
 
-![Customized Card](https://stats.alan.org.cn/api/pin?username=alanosy&repo=online-exam-system-frontend&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
+![Customized Card](https://stats.alan.org.cn/api/pin?username=alanosy&repo=online-exam-system-backend&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
 
 ![Customized Card](https://stats.alan.org.cn/api/pin?username=alanosy&repo=blog&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
