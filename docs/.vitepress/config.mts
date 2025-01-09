@@ -7,7 +7,7 @@ export default defineConfig({
   lang: "zh-Hans",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    logo: "/avatar.jpg",
+    logo: "/avatar.jpeg",
     nav: [
       { text: "首页", link: "/" },
       {
