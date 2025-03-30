@@ -2,7 +2,6 @@
 title: Docker使用过的命令
 tags: []
 categories: []
-permalink: posts/1.html
 excerpt: ''
 poster:
   topic: null
