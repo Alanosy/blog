@@ -93,7 +93,7 @@ kafka-topics.sh --bootstrap-server localhost:9092 --topic test --delete
 
 #### 第三章：生产者
 
-| 参数名                                | 参数作用                                                     | 类型 | 默认值     | ***\*推荐值\****                            |
+| 参数名                                | 参数作用                                                     | 类型 | 默认值     | 推荐值                                      |
 | ------------------------------------- | ------------------------------------------------------------ | ---- | ---------- | ------------------------------------------- |
 | bootstrap.servers                     | 集群地址，格式为：brokerIP1:端口号,brokerIP2:端口号          | 必须 |            |                                             |
 | key.serializer                        | 对生产数据Key进行序列化的类完整名称                          | 必须 |            | Kafka提供的字符串序列化类：StringSerializer |
@@ -213,6 +213,10 @@ producer.abortTransaction();
 
 #### 第四章：数据存储
 
+![截屏2025-05-05 下午1.19.41](../../../assets/images/Kafka学习笔记/截屏2025-05-05 下午1.19.41.png)
+
+![截屏2025-05-05 下午1.16.15](../../../assets/images/Kafka学习笔记/截屏2025-05-05 下午1.16.15.png)
+
 ##### 存储组件
 
 **Ø** ***\*KafkaApis\**** : Kafka应用接口组件，当Kafka Producer向Kafka Broker发送数据请求后，Kafka Broker接收请求，会使用Apis组件进行请求类型的判断，然后选择相应的方法进行处理。
@@ -253,9 +257,9 @@ producer.abortTransaction();
 
 #### 第五章： 消费数据
 
+![截屏2025-05-05 下午1.18.14](../../../assets/images/Kafka学习笔记/截屏2025-05-05 下午1.18.14.png)
+
 ##### 基本步骤
-
-
 
 | 参数名                        | 参数作用                                                     | 类型 | 默认值           | 推荐值                                        |
 | ----------------------------- | ------------------------------------------------------------ | ---- | ---------------- | --------------------------------------------- |
@@ -283,8 +287,6 @@ Kafka会根据消费者发送的参数，返回数据对象ConsumerRecord。返�
 | timestamp | 数据时间戳 |
 | key       | 数据key    |
 | value     | 数据value  |
-
-
 
 ##### 消费数据时的配置：
 
@@ -315,4 +317,145 @@ Kafka消费者默认的分区分配就是RangeAssignor，CooperativeStickyAssign
 1. earliest
 2. latest
 3. none
+
+#### SpringBoot集成
+
+##### 配置文件
+
+``` yaml
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 0
+    consumer:
+      group-id: test#消费者组
+      #消费方式: 在有提交记录的时候，earliest与latest是一样的，从提交记录的下一条开始消费
+      # earliest：无提交记录，从头开始消费
+      #latest：无提交记录，从最新的消息的下一条开始消费
+      auto-offset-reset: earliest
+      enable-auto-commit: true #是否自动提交偏移量offset
+      auto-commit-interval: 1s #前提是 enable-auto-commit=true。自动提交的频率
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 2
+      properties:
+        #如果在这个时间内没有收到心跳，该消费者会被踢出组并触发{组再平衡 rebalance}
+        session.timeout.ms: 120000
+        #最大消费时间。此决定了获取消息后提交偏移量的最大时间，超过设定的时间（默认5分钟），服务端也会认为该消费者失效。踢出并再平衡
+        max.poll.interval.ms: 300000
+        #配置控制客户端等待请求响应的最长时间。
+        #如果在超时之前没有收到响应，客户端将在必要时重新发送请求，
+        #或者如果重试次数用尽，则请求失败。
+        request.timeout.ms: 60000
+        #订阅或分配主题时，允许自动创建主题。0.11之前，必须设置false
+        allow.auto.create.topics: true
+        #poll方法向协调器发送心跳的频率，为session.timeout.ms的三分之一
+        heartbeat.interval.ms: 40000
+        #每个分区里返回的记录最多不超max.partitions.fetch.bytes 指定的字节
+        #0.10.1版本后 如果 fetch 的第一个非空分区中的第一条消息大于这个限制
+        #仍然会返回该消息，以确保消费者可以进行
+        #max.partition.fetch.bytes=1048576  #1M
+    listener:
+      #当enable.auto.commit的值设置为false时，该值会生效；为true时不会生效
+      #manual_immediate:需要手动调用Acknowledgment.acknowledge()后立即提交
+      #ack-mode: manual_immediate
+      missing-topics-fatal: true #如果至少有一个topic不存在，true启动失败。false忽略
+      #type: single #单条消费？批量消费？ #批量消费需要配合 consumer.max-poll-records
+      type: batch
+      concurrency: 2 #配置多少，就为为每个消费者实例创建多少个线程。多出分区的线程空闲
+    template:
+      default-topic: "test"
+server:
+  port: 9999
+```
+
+##### 配置文件
+
+``` java
+package com.atguigu.spring.config;
+
+public class SpringBootKafkaConfig {
+    public static final String TOPIC_TEST = "test";
+    public static final String GROUP_ID = "test";
+}
+```
+
+##### 发送数据
+
+``` java
+package com.atguigu.spring.controller;
+
+import com.atguigu.springkafka.config.SpringBootKafkaConfig;
+import lombok.extern.slf4j.Slf4j;
+import cn.hutool.json.JSONUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+
+@RestController
+@RequestMapping("/kafka")
+@Slf4j
+public class KafkaProducerController {
+
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @ResponseBody
+    @PostMapping(value = "/produce", produces = "application/json")
+    public String produce(@RequestBody Object obj) {
+
+        try {
+            String obj2String = JSONUtil.toJsonStr(obj);
+            kafkaTemplate.send(SpringBootKafkaConfig.TOPIC_TEST, obj2String);
+            return "success";
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return "success";
+    }
+}
+```
+
+##### 接收数据
+
+``` java
+package com.atguigu.spring.component;
+
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
+import com.atguigu.springkafka.config.SpringBootKafkaConfig;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+
+
+@Component
+@Slf4j
+public class KafkaDataConsumer {
+    @KafkaListener(topics = SpringBootKafkaConfig.TOPIC_TEST, groupId = SpringBootKafkaConfig.GROUP_ID)
+    public void topic_test(List<String> messages, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+        for (String message : messages) {
+            final JSONObject entries = JSONUtil.parseObj(message);
+            System.out.println(SpringBootKafkaConfig.GROUP_ID + " 消费了： Topic:" + topic + ",Message:" + entries.getStr("data"));
+            //ack.acknowledge();
+        }
+    }
+}
+```
 
