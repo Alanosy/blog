@@ -15,264 +15,227 @@ banner:
 references:
 ---
 
-### Docker学习笔记
+# Docker 学习笔记
 
-#### 第一章：镜像
+## 第一章：镜像管理
 
-| 命令          | 命令含义 |
-| ------------- | -------- |
-| docker search | 搜索镜像 |
-| docker pull   | 下载镜像 |
-| docker images | 镜像列表 |
-| docker rmi    | 删除镜像 |
+| 命令            | 描述                   | 常用参数                   |
+| --------------- | ---------------------- | -------------------------- |
+| `docker search` | 搜索Docker Hub上的镜像 | `--limit` 限制搜索结果数量 |
+| `docker pull`   | 下载镜像到本地         | `-a` 下载所有标签版本      |
+| `docker images` | 列出本地镜像           | `-q` 只显示镜像ID          |
+| `docker rmi`    | 删除本地镜像           | `-f` 强制删除              |
 
-#### 第二章：容器
+**补充细节**：
+- 删除镜像前需确保没有容器在使用该镜像
+- 使用`docker image prune`可清理悬空镜像
+- 镜像命名规范：`[仓库地址]/[命名空间]/[镜像名]:[标签]`
 
-| 容器           | 命令含义 |
-| -------------- | -------- |
-| docker run     | 运行     |
-| docker ps      | 查看     |
-| docker stop    | 停止     |
-| docker start   | 启动     |
-| docker restart | 重启     |
-| docker stats   | 状态     |
-| docker logs    | 日志     |
-| docker exec    | 进入     |
-| docker rm      | 删除     |
+## 第二章：容器操作
 
-##### docker run 运行参数：
+| 命令             | 描述                 |
+| ---------------- | -------------------- |
+| `docker run`     | 创建并启动容器       |
+| `docker ps`      | 查看容器列表         |
+| `docker stop`    | 停止运行中的容器     |
+| `docker start`   | 启动已停止的容器     |
+| `docker restart` | 重启容器             |
+| `docker stats`   | 查看容器资源使用情况 |
+| `docker logs`    | 查看容器日志         |
+| `docker exec`    | 进入运行中的容器     |
+| `docker rm`      | 删除容器             |
 
-docker run  参数放中间 镜像名
+### `docker run` 详细参数
 
-1. -d 后台运行
+```bash
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
 
-2. --name 给容器取名
+常用参数：
+- `-d`：后台运行（守护模式）
+- `--name`：指定容器名称
+- `-p`：端口映射（格式：`主机端口:容器端口`）
+- `-e`：设置环境变量
+- `--restart`：重启策略（`always|on-failure|unless-stopped`）
+- `--network`：指定网络
+- `-v`：数据卷/目录挂载
 
-3. -p 外部端口:内部端口  端口映射
-4. -e 指定环境变量
-5. --restart always 开机自启
-6. --network 网络名 加入自定义网络
-7. -v 目录挂载
+### 其他命令细节
 
-##### docker exec进入：
-
-``` bash 
+**进入容器**：
+```bash
 docker exec -it 容器名 /bin/bash
+# 或使用sh
+docker exec -it 容器名 /bin/sh
 ```
 
-##### docker ps查看：
+**查看容器**：
+- `docker ps -a`：查看所有容器（包括已停止的）
+- `docker ps -aq`：只显示容器ID
 
-默认是查看运行中的容器
+**批量操作**：
+```bash
+# 停止所有容器
+docker stop $(docker ps -aq)
 
--a  查看所有容器，包括停止和启动的容器
-
--aq 打印所有容器id。docker rm -f $(docker ps -aq) 批量删除所有容器
-
-##### docker rm删除参数：
-
--f  强制删除
-
-
-
-#### 第三章：保存容器
-
-| 命令          | 命令含义 |
-| ------------- | -------- |
-| docker commit | 提交     |
-| docker save   | 保存     |
-| docker load   | 加载     |
-
-##### docker commit 提交
-
--a 指定作者
-
--c 有那行改变列表
-
--m 提交信息
-
--p 暂停容器运行
-
-``` bash
-docker commit -m "提交信息" 容器名 镜像名:版本号
+# 删除所有容器
+docker rm -f $(docker ps -aq)
 ```
 
-##### docker save 
+## 第三章：镜像保存与加载
 
--o 指定输出的文件名
+| 命令            | 描述                |
+| --------------- | ------------------- |
+| `docker commit` | 将容器保存为新镜像  |
+| `docker save`   | 将镜像保存为tar文件 |
+| `docker load`   | 从tar文件加载镜像   |
 
-``` bash
-docker save -o 输出的文件名.tar 镜像名:版本号
+**`docker commit`示例**：
+```bash
+docker commit -m "描述信息" 容器名 新镜像名:标签
 ```
 
-##### docker load:
+**镜像导出导入**：
+```bash
+# 导出镜像
+docker save -o image.tar 镜像名:标签
 
--i 指定压缩包路径
-
-#### 第四章：分享
-
-* docker login 登录
-* docker tag 命名
-* docker push 推送
-
-##### docker tag:
-
-``` bash
-docker tag 原来的镜像:版本号 新的目标镜像:版本号
+# 导入镜像
+docker load -i image.tar
 ```
 
-##### docker push
+## 第四章：镜像分享
 
-``` bash
-docker push 镜像名:版本号
+| 命令           | 描述                |
+| -------------- | ------------------- |
+| `docker login` | 登录Docker Registry |
+| `docker tag`   | 给镜像打标签        |
+| `docker push`  | 推送镜像到Registry  |
+
+**操作流程**：
+1. 登录仓库：`docker login registry.example.com`
+2. 重命名镜像：`docker tag 原镜像 新镜像名:标签`
+3. 推送镜像：`docker push 新镜像名:标签`
+
+## 第五章：数据存储
+
+### 挂载方式
+1. **目录挂载**：`-v /host/path:/container/path`
+2. **卷挂载**：`-v volume_name:/container/path`
+
+### 卷管理
+```bash
+# 查看所有卷
+docker volume ls
+
+# 创建卷
+docker volume create my_volume
+
+# 查看卷详情
+docker volume inspect my_volume
 ```
 
-#### 第五章：存储
+**注意**：
+- 卷默认存储在`/var/lib/docker/volumes/`
+- 卷的生命周期独立于容器
 
-##### 目录挂载：-v 本地路径:容器路径
+## 第六章：网络管理
 
-##### 卷映射 -v 卷名:容器路径      
+### 常用命令
+```bash
+# 创建网络
+docker network create my_network
 
-只需要取卷名，不已./路径开始，docker会自动创建存储位置，去把容器内部的内容信息和外部保持一致 
+# 查看网络
+docker network ls
 
-卷映射 统一把文件放在了 /var/lib/docker/volumes/卷名
+# 查看网络详情
+docker network inspect my_network
 
-docker volume 对卷的操作
-
-ls查看卷列表
-
- create 卷名 自己创建卷
-
-inspect 卷名 查看卷详情 可以查看卷位置
-
-#### 第六章：网络
-
-docker 会为每个容器分配唯一ip，使用容器ip+容器
-
-docker0默认不支持主机域名
-
-##### 创建自定义网络
-
-容器名就是稳定域名
-
-docker network 
-
-1. create 创建网络
-
-2. rm 删除网络
-
-3. ls查看网络列表
-
-4. inspect查看网络详情
-
-创建自定义网络
-
-``` bash
-docker network create 网络名
+# 删除网络
+docker network rm my_network
 ```
 
-docker run 加入网络时用 --network 网络名
-
-#### 第七章：Docker Compose
-
-首先要创建一个yaml文件
-
-| 命令                          | 命令含义      |
-| ----------------------------- | ------------- |
-| docker compose up -d          | 上线 后台运行 |
-| docker compose down           | 下线          |
-| docker compose start x1 x2 x3 | 启动          |
-| docker compose stop x1 x3     | 停止          |
-| docker compose scale x2=3     | 扩容          |
-
-##### docker compose 语法
-
-顶级元素：
-
-| 元素名   | 元素含义 |
-| -------- | -------- |
-| name     | 名字     |
-| services | 服务     |
-| networks | 网络     |
-| volumes  | 卷       |
-| configs  | 配置     |
-| secrets  | 密钥     |
-
-案例：
-
-``` yaml
-name: 应用部署的名字
-services: 我们要部署的服务
-	container_name: 容器名
-	image: 要使用的镜像:版本号
-	ports: 要暴露的端口
-		- "物理机端口:容器内部端口"
-		- "物理机端口:容器内部端口"
-	environment: 环境变量
-		- 键=名
-		- 键=名
-	volumes: 目录挂载，注意如果是挂载的「卷」要在下面的volumes中声明
-		- 卷名:路径
-		- 路径:路径
-	restart: always 开启自启
-	networks:
-		- 网络名
-networks: 网络
-	网络名: 只需要写个"网络名:"就行
-volumes: 卷
-	卷名: 只需要写个"卷名:"就行，下面也可以配置详细信息
+### 容器连接网络
+```bash
+docker run --network=my_network ...
 ```
 
-启动
+**特点**：
+- 自定义网络支持DNS解析（容器名即主机名）
+- 默认bridge网络不支持容器名解析
 
-``` bash
-docker compose -f yaml文件名 up -d
+## 第七章：Docker Compose
+
+### 基本命令
+```bash
+# 启动服务
+docker compose up -d
+
+# 停止服务
+docker compose down
+
+# 启停特定服务
+docker compose start/stop service_name
+
+# 扩容服务
+docker compose scale service=num
 ```
 
-启动后的网络和卷名会加上"应用名_"的前缀，容器名如果没有指定也会加这个前缀
+### YAML文件结构
+```yaml
+name: 应用名称
+services:
+  服务名:
+    container_name: 容器名
+    image: 镜像:标签
+    ports:
+      - "主机端口:容器端口"
+    environment:
+      - KEY=VALUE
+    volumes:
+      - 卷名:容器路径
+      - 主机路径:容器路径
+    networks:
+      - 网络名
+    restart: always
 
-下线
+networks:
+  网络名:
 
-``` bash
-docker -f yaml文件名 compose down
+volumes:
+  卷名:
 ```
 
-可以在down后面指定参数
+**注意**：
+- 资源名称会添加`应用名_`前缀
+- `down`命令可选参数：
+  - `--rmi all`：删除相关镜像
+  - `-v`：删除关联卷
 
---rmi all 移除dockerpose中包含的本地所有镜像
+## 第八章：Dockerfile
 
--v 移除本地卷
+### 常用指令
 
-#### 第八章：DockerFile
+| 指令         | 说明          | 示例                          |
+| ------------ | ------------- | ----------------------------- |
+| `FROM`       | 基础镜像      | `FROM ubuntu:20.04`           |
+| `RUN`        | 执行命令      | `RUN apt-get update`          |
+| `CMD`        | 容器启动命令  | `CMD ["python", "app.py"]`    |
+| `EXPOSE`     | 声明暴露端口  | `EXPOSE 8080`                 |
+| `ENV`        | 设置环境变量  | `ENV APP_HOME=/app`           |
+| `COPY`       | 复制文件      | `COPY . /app`                 |
+| `ADD`        | 复制+解压文件 | `ADD app.tar.gz /app`         |
+| `WORKDIR`    | 设置工作目录  | `WORKDIR /app`                |
+| `ENTRYPOINT` | 容器入口点    | `ENTRYPOINT ["java", "-jar"]` |
+| `VOLUME`     | 创建挂载点    | `VOLUME /data`                |
+| `USER`       | 指定运行用户  | `USER appuser`                |
+| `ARG`        | 构建参数      | `ARG APP_VERSION=1.0`         |
 
-| 常见指令   | 作用               |
-| ---------- | ------------------ |
-| FROM       | 指定镜像基础环境   |
-| RUN        | 运行自定义命令     |
-| CMD        | 容器启动命令或参数 |
-| LABEL      | 自定义标签         |
-| EXPOSE     | 指定暴露端口       |
-| ENV        | 环境变量           |
-| ADD        | 添加文件到镜像     |
-| COPY       | 复制文件到镜像     |
-| ENTRYPOINT | 容器固定启动命令   |
-| VOLUME     | 数据卷             |
-| USER       | 指定用户和用户组   |
-| WORKDIR    | 指定默认工作目录   |
-| ARG        | 指定构建参数       |
-
-案例
-
-``` 
-FROM openjdk:17
-LABEL author=alan
-COPY app.jar /app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
-```
-
-构建命令
-
-``` bash
-docker build -f 指定文件名 -t 镜像名:版本号 .
+### 构建镜像
+```bash
+docker build -t 镜像名:标签 -f Dockerfile路径 上下文路径
+# 示例
+docker build -t myapp:1.0 -f ./Dockerfile .
 ```
 
