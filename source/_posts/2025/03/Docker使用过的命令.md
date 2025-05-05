@@ -88,4 +88,47 @@ consul agent -dev \
 -ui -node=n1 -bootstrap-expect=1 -client=0.0.0.0
 ```
 
+## Kafka
+
+``` bash 
+docker run \
+-d \
+--name kafka \
+-p 9092:9092 \
+--link zookeeper:zookeeper \
+--env KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
+--env KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+--env KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \
+--env KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 wurstmeister/kafka
+
+```
+
+## Rabbitmq
+
+1. 拉取镜像
+
+``` bash
+docker pull rabbitmq
+```
+
+2. 启动命令
+
+``` bash
+docker run -d -p 15672:15672 -p 5672:5672 \
+        --restart=always \
+        -e RABBITMQ_DEFAULT_USER=admin \
+        -e RABBITMQ_DEFAULT_PASS=Aa112211 \
+        --hostname myRabbit \
+        --name rabbitmq \
+        rabbitmq
+```
+
+3. 开启Web端
+
+``` bash
+#进入rabbitmq容器
+docker exec -it 容器名/容器id /bin/bash
+#开启web客户端
+rabbitmq-plugins enable rabbitmq_management
+```
 
