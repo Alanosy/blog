@@ -208,6 +208,7 @@ volumes:
 ```
 
 **注意**：
+
 - 资源名称会添加`应用名_`前缀
 - `down`命令可选参数：
   - `--rmi all`：删除相关镜像
@@ -232,7 +233,22 @@ volumes:
 | `USER`       | 指定运行用户  | `USER appuser`                |
 | `ARG`        | 构建参数      | `ARG APP_VERSION=1.0`         |
 
+**案例**:
+
+``` 
+FROM openjdk:17
+
+LABEL author=alan
+
+COPY app.jar /app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","/app.jar"]
+```
+
 ### 构建镜像
+
 ```bash
 docker build -t 镜像名:标签 -f Dockerfile路径 上下文路径
 # 示例
