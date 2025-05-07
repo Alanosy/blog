@@ -15,11 +15,9 @@ banner:
 references:
 ---
 
-### JUC并发编程
+# JUC并发编程
 
-
-
-#### 一把锁、2个并、3个程
+## 一把锁、2个并、3个程
 
 * 一把锁
 
@@ -36,13 +34,9 @@ references:
   * 线程：一个进程下有多个线程
   * 管程：Monitor（监视器），也就是常说的锁，JVM中同步是基于进入和退出监视器对象来实现的，每个对象实例都会有一个Monitor对象
 
-
-
 #### 用户现场与守护线程
 
 一般情况下不做特别说明，默认都是用户线程
-
-
 
 * 用户线程：是系统的工作线程，完成这个程序需要完成的业务操作
 * 守护线程：特殊的线程，为其他线程服务的，默默的执行系统行的服务，服务线程，用户线程结束，虚拟机会自动退出守护线程
@@ -59,7 +53,7 @@ true：守护线程
 
 false：用户线程
 
-### CompletableFuture
+## CompletableFuture的引出
 
 #### Future为什么出现
 
@@ -75,21 +69,7 @@ Callable接口有返回值
 
 Future接口和FutureTask实现类
 
-
-
-多线程/有返回/一步
-
-FutureTask(Callable<V> callable)
-
-09看完
-
-CompletableFuture之四大静态方法
-
-
-
-
-
-
+需要实现：多线程/有返回/异步
 
 FutureTask+线程池的缺点：
 
@@ -102,10 +82,6 @@ FutureTask+线程池的缺点：
 get容易导致阻塞，我们可以判断future的状态，什么时候完成了什么时候调用，就不会容易导致阻塞，实际工作不建议直接用get，非常容易阻塞
 
 futureTask.isDone()判断任务是否完成
-
-
-
-想完成一些复杂的任务
 
 对于简单的业务场景使用Future完全OK
 
@@ -125,7 +101,7 @@ futureTask.isDone()判断任务是否完成
 
 阻塞的方式和异步编程的设计理念相违背，而轮训的方式会耗费无谓的CPU资源。因此
 
-### CompletableFuture
+## CompletableFuture
 
 引入了CompletableFuture
 
@@ -135,7 +111,7 @@ CompletableFuture实现了Future和CompletionStage
 
 CompletionStage 代表异步计算过程中的某一个阶段，一个阶段完成以后可能会触发另一个阶段
 
-#### 核心的四个静态方法
+### 核心的四个静态方法
 
 * runAsync无 返回值
   * public static CompletableFuture<Void> runAsync(Runable runable)
@@ -219,3 +195,139 @@ CompleableFuture的优点：
 
 join和get的区别就是抛不抛异常的问题
 
+
+
+### CompleableFuture常用方法
+
+1. 获得结果和触发计算
+
+   1. 获得结果
+
+      ``` java
+      // 后去结果需要抛异常
+      public T get()
+      ```
+
+      ``` java
+      public T get(long timeout,TimeUnit unit)
+      ```
+
+      ``` java
+      // 获取结果不用抛异常
+      public T join()
+      ```
+
+      ``` java
+      // 如果计算完则获得结果，否则返回valueIfAbsent
+      public T getNow(T valueIfAbsent) 
+      ```
+
+   2. 主动触发计算
+
+      ``` java
+      // 是否打断并立即获得括号中的值
+      // 计算完成时，返回false，后面用join获取值就是计算后的值
+      // 计算未完成时，返回true，后面获取值时就是括号中设置的值
+      public boolean complete(T value) 
+      ```
+
+2. 对计算结果
+
+   1. thenApply
+      1. 计算结果存在依赖关系，这两个线程串行化
+      2. 由于存在依赖管理（当前步骤错，不走下一步），当前步骤有异常的话就叫停
+   2. handle
+      1. 计算结果存在依赖关系，这两个线程串行化
+      2. 有异常也可以往下一步走，根据带的异常参数可以进行下一步的处理
+
+3. 对计算结果进行消费
+
+   1. thenAccept:接收任务的处理结果，并消费处理，**无返回结果** 
+
+   2. 代码之前的顺序执行问题
+
+      1. thenRun
+         * thenRun(Runable runable) 任务A执行完执行B，并且B不需要A的结果
+      2. thenAccept
+         * thenAccept(Consumer action) 任务A执行完执行B，B需要A的结果，但是任务B**无返回值**
+      3. thenApply
+         * thenApply(Function fn) 任务A执行完执行B，B需要A的结果，同时任务B是**有返回值的**
+
+   3. CompleableFuture和线程池说明
+
+      * 没有传入自定义线程池，都用默认线程池ForkJoinPool
+      * 传入了一个自定义线程池
+        * 如果是thenRun 就使用前一个的线程池
+        * 如果是thenRunAsync，就不会使用前一个的线程池，会使用默认的ForkJoinPool
+      * 有可能处理太快，系统优化切换原则，直接使用main线程处理
+
+   4. 对计算速度进行选用
+
+      1. 谁快用谁
+
+      2. applyToEither
+
+         ``` java
+         // 那个先计算出结果，就返回那个的compleableFuture对象
+         cpC = cpA.applyToEither(cpB,f->{return f+ "is winer"})
+         ```
+
+   5. 对计算结果进行合并
+
+      1. 连个CompletionStage任务都完成后，最终能把两个任务的结果一起交给thenCombine来处理
+
+      2. 先完成的先等着，等待其他分支任务
+
+      3. thenCombine
+
+         ``` java
+         cp<T> result = cpA.thenCombine(cpB,(x,y)->{return x+y});
+         ```
+
+         
+
+## 多线程锁之线程锁知识概念
+
+锁的类别：
+
+1. 乐观锁和悲观锁
+2. 公平锁和非公平锁
+3. 可重入锁
+4. 死锁及排查
+5. 自旋锁
+6. 轻量锁，偏向锁，邮戳锁
+
+### 乐观锁和悲观锁
+
+#### 悲观锁
+
+认为自己在使用数据的时候一定有别的线程来修改数据，因此在获取数据的时候会先加锁，确保数据不会被别的线程修改
+
+适合写操作多的场景，先加锁可以保证写操作时数据正确
+
+显式的锁定之后再操作同步资源
+
+synchronized关键字和Lock的实现类都是悲观锁
+
+#### 乐观锁
+
+认为自己在使用数据的时候不会有别的线程修改数据或资源，所以不会添加锁
+
+在java中时通过使用无锁编程来实现的，知识在更新数据的时候去判断，之前有没有别的线程更新了这个数据
+
+如果这个数据没有被更新，当前线程将自己修改的数据成功写入
+
+如果这个数据已经被其他线程更新，则更具不同的实现方式执行不同的操作，比如放弃修改，重试抢锁等等。
+
+判断规则：
+
+1. 版本号机制Version
+2. 最常采用的是CAS算法（Compare-and-swap,比较并替换），Java原子类中的递增操作就通过CAS自旋实现的
+
+适合赌操作多的场景，不加锁的特点能够使其他读操作的性能大幅提升
+
+乐观锁则直接去操作同步资源，是一种无锁算法，得之我幸不得我命，在努力就是
+
+-------
+
+接下来看31集
