@@ -1,5 +1,5 @@
 ---
- title: JUC笔记
+title: JUC笔记
 tags: []
 categories: []
 excerpt: ''
