@@ -141,9 +141,9 @@ footer:
     Mmail:
       icon: '<img src="/assets/footer/envelopes-bulk.svg"/>'
       url: mailto:fignet@163.com
-    telegram:
-      icon: '<img src="/assets/footer/telegram.svg"/>'
-      url: https://t.me/fignets
+    # telegram:
+    #   icon: '<img src="/assets/footer/telegram.svg"/>'
+    #   url: https://t.me/fignets
     Comment:
       icon: <img src="/assets/footer/comment.svg" alt="comment" />
       url: /social/about/#comments
