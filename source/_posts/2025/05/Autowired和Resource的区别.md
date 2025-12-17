@@ -1,5 +1,5 @@
 ---
-title: @Autowired和@Resource的区别
+title: Autowired和Resource的区别
 tags: []
 categories: []
 excerpt: ''
@@ -11,7 +11,6 @@ poster:
 date: 2025-05-11 00:59:53
 updated: 2025-05-11 00:59:53
 topic:
-banner:
 references:
 ---
 
