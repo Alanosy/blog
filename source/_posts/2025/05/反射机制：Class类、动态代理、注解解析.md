@@ -1,5 +1,5 @@
 ---
-title: 反射机制：Class类、动态代理、注解解析
+title: Java反射机制
 tags: []
 categories: []
 excerpt: ''
