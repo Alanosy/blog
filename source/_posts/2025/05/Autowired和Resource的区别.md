@@ -14,6 +14,8 @@ topic:
 references:
 ---
 
+# @Autowired与@Resource
+
 `@Autowired` 和 `@Resource` 是 Java 中常用的两种依赖注入注解，但它们的来源、行为和使用场景有所不同。以下是它们的核心区别：
 
 ---

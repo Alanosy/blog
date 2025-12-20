@@ -15,7 +15,7 @@ banner:
 references:
 ---
 
-# Java 8 Stream API 详细使用指南
+# Java 8 Stream API
 
 ## 一、Stream 概述
 
