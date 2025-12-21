@@ -1,7 +1,7 @@
 ---
 title: Autowired和Resource的区别
-tags: []
-categories: []
+tags: [Spring注解]
+categories: [Spring注解]
 excerpt: ''
 poster:
   topic: null

@@ -1,7 +1,7 @@
 ---
 title: JUC笔记
-tags: []
-categories: []
+tags: [JAVA高级]
+categories: [JAVA高级]
 excerpt: ''
 poster:
   topic: null

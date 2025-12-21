@@ -1,7 +1,7 @@
 ---
 title: Docker学习笔记
-tags: []
-categories: []
+tags: [中间件]
+categories: [中间件]
 excerpt: ''
 poster:
   topic: null

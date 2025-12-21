@@ -1,7 +1,7 @@
 ---
 title: Lambda表达式与方法引用
-tags: []
-categories: []
+tags: [JAVA]
+categories: [JAVA]
 excerpt: ''
 poster:
   topic: null

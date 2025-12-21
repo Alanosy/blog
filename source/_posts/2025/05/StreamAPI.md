@@ -1,7 +1,7 @@
 ---
 title: StreamAPI
-tags: []
-categories: []
+tags: [JAVA]
+categories: [JAVA]
 excerpt: ''
 poster:
   topic: null
