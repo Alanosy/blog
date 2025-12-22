@@ -3,7 +3,7 @@ title: Java 中的泛型
 topic: java-ds-oop
 date: 2024-04-02 15:06:43
 categories:
-  - Java 数据结构与面向对象编程
+  - JAVA
 tags:
   - Java
   - 数据结构

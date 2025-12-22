@@ -3,7 +3,7 @@ title: 异常处理 (Exception Handling) - 第一部分
 topic: java-ds-oop
 date: 2024-02-27 17:02:40
 categories:
-  - Java 数据结构与面向对象编程
+  - JAVA
 tags:
   - Java
   - 异常处理

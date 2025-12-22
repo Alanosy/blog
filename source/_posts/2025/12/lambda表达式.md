@@ -3,7 +3,7 @@ title: Java 中的 Lambda 表达式
 topic: java-ds-oop
 date: 2024-04-30 15:25:15
 categories:
-  - Java 数据结构与面向对象编程
+  - JAVA
 tags:
   - Java
   - 数据结构
