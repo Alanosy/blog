@@ -227,5 +227,199 @@ FileChannel主要用来对本地文件进行I/O 操作，常见的方法有
 * public long transferFrom(ReadableByteChannel src,long position, long count)，从目标通道中复制数据到当前通道
 * public long transferTo(long position, long count, WritableByteChannel target)，把数据从当前通道复制给目标通道
 
+## Channel应用案例1
+
+本地文件写
+
+``` java
+String str = "test";
+FileOutputStream fis = new FileOutputStream("./test.txt");
+FileChannel fc = fis.getChannel();
+ByteBuffer buf = ByteBuffer.allocate(1024);
+buf.put(str.getBytes());
+buf.flip();
+fc.write(buf);
+fis.close;
+```
+
+## Channel应用案例2
+
+本地文件读
+
+``` java
+File file = new File("./test.txt")
+FileInputStream fis = new FileInputStream(file);
+FileChannel fc = fis.getChannel();
+ByteBuffer buf = ByteBuffer.allocate((int)file.lenght);
+fc.read(buf);
+System.out.println(new String(buf.array()))
+fis.close;
+```
+
+## Channel应用案例3
+
+``` java
+FileInputStream fis1 = new FileInputStream("./test.txt");
+FileChannel fc1 = fis1.getChannel();
+FileOutputStream fis2 = new FileOutputStream("./test.txt");
+FileChannel fc2 = fis2.getChannel();
+ByteBuffer buf = ByteBuffer.allocate(512);
+while(true){
+  buf.clear(); // 复位很重要 会导致limt和position相同导致死循环
+  int read = fc2.read(buf);
+  if(read == -1){
+    break;
+  }
+  buf.flip();
+  fc2.write(buf);
+}
+fis1.close;
+fis2.close;
+
+```
+
+## Channel拷贝文件
+
+transferFrom
+
+``` java
+FileInputStream fis1 = new FileInputStream("./test.txt");
+FileChannel fc1 = fis1.getChannel();
+FileOutputStream fis2 = new FileOutputStream("./test.txt");
+FileChannel fc2 = fis2.getChannel();
+fc2.transferFrom(fc1,0,fc1.size());
+fis1.close;
+fis2.close;
+```
+
+## Buffer的注意细节
+
+* ByteBuffer 支持类型化的put 和 get,put 放入的是什么数据类型，get就应该使用相应的数据类型来取出，否则可能有 BufferUnderflowException 异常。
+
+* 可以将一个普通Buffer 转成只读Buffer;buffer.asReadOnlyBuffer(),如果继续写会抛出ReadOnlyBufferException
+
+* NIO 还提供了 MappedByteBuffer，可以让文件直接在内存(**堆外的内存**)中进行修改，而如何同步到文件由NIO 来完成，操作系统不需要拷贝一次
+
+  ``` java
+  RandomAccessFile rfile = new RandomAccessFile("./test.txt",rw);
+  FileChannel cl = rfile.getChannel();
+  // 参数1: FileChannel.MapMode.READ_WRITE 使用读写模式
+  // 参数2: 0是可以映射的起始位置
+  // 参数3: 5是可以映射到内存的大小（*不是索引位置），即将test.txt的多少个字节映射到内存
+  // 可以直接修改的范围为0-5不包含5,如果超过会抛出IndexOutOfBoundsException
+  // 实际类型DirectByteBUffer
+  MappedByteBuffer mapBuf = cl.map(FileChannel.MapMode.READ_WRITE,0,5);
+  mapBuf.put(0,(byte)'H');
+  mapBuf.put(3,(byte)'9');
+  rfile.close();
+  ```
+
+  
+
+* 前面我们讲的读写操作，都是通过一个Buffer 完成的，NIO 还支持 通过多个Buffer(即 Buffer 数组)完成读写操作，即 Scattering(分散) 和 Gatering（聚合）
+
+  * Scattering : 将数据写入到buffer时，可以采用buffer数组，依次写入（分散）
+  * Gatering:从buffer读取数据时，可以采用buffer数组依次读入
+
+  ```  java
+  // ServerSocketChannel和SocketChannel网络
+  ServerSocketChannel ssc = ServerSocketChannel.open();
+  InetSocketAddress address = new InetSocketAddress(7000);
+  // 绑定端口到socket并启动
+  ssc.socket().bind(address);
+  // 创建buffer数组
+  ByteBuffer[] byteBufs = new ByteBuffer[2];
+  byteBufs[0] = ByteBuffer.allocate(5);
+  byteBufs[1] = ByteBuffer.allocate(3);
+  // 等待客户端连接(telnet)
+  SocketChannel sc = ssc.accept();
+  // 循环读取
+  int messageLength = 8; // 假定从客户端接收8个字节
+  while(true){
+    int byteRead = 0;
+    while(byteRead<messageLength){
+      long l = sc.read(byteBufs);
+      byteRead =+ l; // 累计读取到的字节数 ;
+      // 使用流打印，可靠当前的这个buffer的position和limit
+      Arrays.asList(byteBufs).stream().map(buf->"position="+buf.position()+",limit="+buf.limit()).forEach(System.out::println);
+    }
+    // 将所有的buffer进行flip
+    Arrays.asList(byteBufs).forEach(buf->buf.flip());
+    // 将数据读出显示到客户端
+    long byteWrite = 0;
+    while(byteWrite<messageLength){
+      long l = sc.write(byteBufs);
+      byteWrite+=l;
+    }
+    // 将所有的buffer进行clear
+    Arrays.asList(byteBufs).forEach(buf->buf.clear());
+    System.out.println("byteRead:="+byteRead+" byteWrite:="+byteWrite+",messageLength"+messageLength)
+  }
+  ```
+
+## Selector选择器
+
+### Selector基本介绍
+
+
+
+* Java 的 NIO，用非阻塞的 IO方式。可以用一个线程，处理多个的客户端连接，就会使用到**Selector(选择器)**
+* **Selector 能够检测多个注册的通道上是否有事件发生(注意:多个Channel以事件的方式可以注册到同一个Selector)**，如果有事件发生，便获取事件然后针对每个事件进行相应的处理。这样就可以只用一个单线程去管理多个通道，也就是管理多个连接和请求。
+* 只有在连接真正有读写事件发生时，才会进行读写，就大大地减少了系统开销，并且不必为每个连接都创建一个线程，不用去维护多个线程
+* 避免了多线程之间的上下文切换导致的开销
+
+
+
+**特别说明**
+
+* Netty 的IO线程 NioEventLoop 聚合了 Selector(选择器,也叫多路复用器)，可以同时并发处理成百上千个客户端连接。
+* 当线程从某客户端 Socket 通道进行读写数据时，若没有数据可用时，该线程可以进行其他任务。
+* 线程通常将非阻塞IO的空闲时间用于在其他通道上执行IO操作，所以单独的线程可以管理多个输入和输出通道。
+* 由于读写操作都是非阻塞的，这就可以充分提升IO线程的运行效率，避免由于频繁I/O阻塞导致的线程挂起。
+* 一个I/O 线程可以并发处理 N个客户端连接和读写操作，这从根本上解决了传统同步阻塞 I/O一连接一线程模型，架构的性能、弹性伸缩能力和可靠性都得到了极大的提升。
+
+### SelectorAPi介绍
+
+Selector 类是一个抽象类,常用方法和说明如下:
+public abstract class Selector implements Closeable 
+
+* public static selector open(); // 得到一个选择器对象
+
+* public int select(long timeout); // 监控所有注册的通道，当其中有10 操作可以进行时，将对应的 SelectionKey 加入到内部集合中并返回，参数用来设置超时时间
+
+* public set<selectionKey> selectedKeys(); // 从内部集合中得到所有的 SelectionKey
+
+
+
+**注意事项**
+
+1. NIO中的ServerSocketChannel功能类似ServerSocket,SocketChannel功能类似的Socket
+2. selector相关方法说明
+   * selector:select() // 阻塞
+   * selector:select(1000) // 阻塞1000毫秒，在1000毫秒后返回
+   * selector:wakeup() // 阻塞 唤醒selector
+   * selector:selectNow() // 不阻塞，立马返回
+
+### SelectionKey在NIO体系
+
+![截屏2025-12-26 下午8.55.14](../../../assets/images/Netty笔记/截屏2025-12-26 下午8.55.14.png)
+
+1. 当客户端连接时，会通过ServerSocketChannel得到SocketChannel
+2. 将socketChannel注册到Selector，register(Selector sel,int ops),一个Selector可以注解多个SocketChannel
+3. 注册后返回一个SelectorKey,会和该Selector关联（集合）
+4. Selector进行监听select方法，返回有事件发生的通道个数
+5. 进一步的到各个的SelectorKey(有事件发生的)
+6. 在通过SelectionKey反向获取SocketChannel，方法channel()
+7. 可以通过得到的channel,完成业务处理
+
+
+
+**事  件 **
+
+* OP_READ：有读取事件发生
+* OP_WRITE：有写事件发生
+* OP_CONNECT：连接成立了
+* OP_ACCEPT：有一个客户端来连接我们
+
 Comining soon...
 
