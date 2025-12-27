@@ -421,5 +421,183 @@ public abstract class Selector implements Closeable
 * OP_CONNECT：连接成立了
 * OP_ACCEPT：有一个客户端来连接我们
 
+
+
+## NIO快速入门1(服务端)
+
+``` java
+package com.lwl.NIO;
+
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.*;
+import java.util.Iterator;
+import java.util.Set;
+
+public class NIOServer {
+    public static void main(String[] args) throws Exception{
+        //创建一个服务端channel
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        //创建一个selector
+        Selector selector = Selector.open();
+        //绑定一个端口，在服务端监听
+        serverSocketChannel.socket().bind(new InetSocketAddress(6666));
+        //设置为非阻塞
+        serverSocketChannel.configureBlocking(false);
+        //serverSocketChannel注册到selector,并设置关心事件
+        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+//        System.out.println("注册SelectionKey的数量" + selector.keys().size());
+
+        //循环等待客户链接
+        while (true){//一次循环解决一个事件集合里的全部事件，下次循环会再继续监听
+            if (selector.select(1000) == 0){//无事发生,继续循环等待
+//                selector.selectedKeys().size() // 有事件发生的事件的数量
+                System.out.println("服务器等待了一秒，无事发生，当前以注册的selectionKey数量为：" + selector.keys().size());
+                continue;
+            }
+            //返回》0，有事发生,获取客户端发生关注事件的集合
+            //通过selectionKeys可以反向获取Channel
+            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            //遍历selectionKeys，获取当前事件集
+            Iterator<SelectionKey> Keyiterator = selectionKeys.iterator();
+            while (Keyiterator.hasNext()){
+                //获取当前事件
+                SelectionKey selectionKey = Keyiterator.next();
+                //查看key发生的事件并作相应的处理
+                if(selectionKey.isAcceptable()) {//有新客户端链接
+                    //为这个客户端生成一个channel
+                    SocketChannel socketchannel = serverSocketChannel.accept();
+                    socketchannel.configureBlocking(false);
+                    System.out.println("客户端连接成功，" + socketchannel.hashCode());
+                    //将当前channel注册到selector,并关心这个事件有没有发生读事件OP_READ，同时给channel关联一个buffer
+                    socketchannel.register(selector, SelectionKey.OP_READ,ByteBuffer.allocate(1024));
+                }
+                if(selectionKey.isReadable()){
+                    //发生了读事件,通过key反向得到channel和绑定的buffer
+                    SocketChannel socketchannel = (SocketChannel)selectionKey.channel();
+                    //获取与该channel关联的buffer，在和连接时就已经绑定了，40行处
+                    ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
+                    socketchannel.read(buffer);//从客户端读到的数据
+                    System.out.println("from 客户端 : " + new String(buffer.array()));
+                    buffer.clear();
+                }
+            }
+            //及时将当前的SelectionKey,防止操作
+            Keyiterator.remove();
+        }
+    }
+}
+
+```
+
+
+
+## NIO快速入门2(客户端)
+
+```java
+package com.lwl.NIO;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
+import java.nio.channels.SocketChannel;
+import java.util.Scanner;
+
+public class NIOClient {
+    public static void main(String[] args) throws IOException {
+        //得到一个网络通道
+        SocketChannel socketChannel = SocketChannel.open();
+        //非阻塞
+        socketChannel.configureBlocking(false);
+        //提供服务器的ip和端口
+        InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 6666);
+        //链接服务器
+        if(!socketChannel.connect(inetSocketAddress)){
+            while (!socketChannel.finishConnect()){
+                System.out.println("链接需要时间，客户端不会阻塞");
+            }
+        }
+//        String str = "hello world!";
+        Scanner scanner = new Scanner(System.in);
+        String str;
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        while (scanner.hasNext()){
+            str = scanner.next();
+            System.out.println(str);
+            buffer.put(str.getBytes());
+            buffer.flip();
+            socketChannel.write(buffer);
+            buffer.clear();
+        }
+        //生成一个和数组一样大的buffer
+//        ByteBuffer byteBuffer = ByteBuffer.wrap(str.getBytes());
+//        //发送数据，将buffer写入channel
+//        socketChannel.write(byteBuffer);
+
+        //代码会停在这
+        System.in.read();
+    }
+}
+
+```
+
+## SelectionKey API
+
+* SelectionKey，表示 Selector 和网络通道的注册关系,共四种:
+* int OP ACCEPT:有新的网络连接可以 accept，值为 16
+* int OP CONNECT:代表连接已经建立，值为8
+* int OP READ:代表读操作，值为1
+* int OP WRITE:代表写操作，值为 4
+
+源码中:
+
+* public static final int OP READ = 1 <<0;
+* public static final int OP WRITE = 1 <<2;
+* public static final int OP CONNECT =1 << 3;
+* public static final int OP ACCEPT= 1 << 4;
+
+SelectionKey的相关方法
+
+public abstract class SelectionKey{
+
+* public abstract Selector selector();//得到与之关联的Selector 对象
+* public abstract SelectableChannel channel();//得到与之关联的通道
+* public final object attachment();//得到与之关联的共享数
+  据
+* public abstract SelectionKey interestOps(int ops);//设置或改变监听事件
+* public final boolean isAcceptable();//是否可以accept
+* public final boolean isReadable();//是否可以读
+* public final boolean isWritable();//是否可以写
+
+
+
+1. ServerSocketChannel 在**服务器端监听新的客户端socket 连接**
+2. 相关方法如下
+   * public abstract class **ServerSocketChannel** extends AbstractSelectableChanne!imp lements NetworkChannel{
+   * public static ServerSocketChannel open()，得到一个ServerSocketChannel通道
+   * public final ServerSocketChannel bind(SocketAddress local)，设置服务器端端县
+   * public final SelectableChannel configureBlocking(boolean block)，设置阻塞或非阻塞模式，取值 false表示采用非阻塞模式
+   * public SocketChannel accept()，接受一个连接，返回代表这个连接的通道对冢
+   * public final SelectionKeyregister(Selector sel,intops)，注册一个选择器并设置监听事件
+
+1. SocketChannel，网络IO通道，**具体负责进行读写操作**。NIO把缓冲区的数据写入通
+   道，或者把通道里的数据读到缓冲区。
+2. 相关方法如下
+   * public abstract class **SocketChannel** extends AbstractSelectableChannelimplements ByteChannel, ScatteringByteChannel, GatheringByteChannel,NetworkChannelf
+   * public static SocketChannel open();//得到-个 SocketChannel 通道
+   * public final SelectableChannel configureBlocking(boolean block);//设置阻塞或非阻塞模式，取值 false表示采用非阻塞模式
+   * public boolean connect(SocketAddress remote);//连接服务器
+   * public boolean finishconnect();//如果上面的方法连接失败，接下来就要通过该方法完成连接操作
+   * public int write(ByteBuffersrc);//往通道里写数据
+   * public int read(ByteBuffer dst);//从通道里读数据
+   * public final SelectionKey register(Selector sel, int ops, Object att);//注册一个选择器并设置监听事件，最后一个参数可以设置共享数据
+   * public final void close();//关闭通道
+
+## Netty概述
+
+
+
 Comining soon...
 
