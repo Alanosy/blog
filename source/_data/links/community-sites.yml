@@ -1,14 +1,15 @@
-- title: Gin-Vue-Admin
-  url: https://www.gin-vue-admin.com/
-  cover: https://image.codepzj.cn/image/202412161419299.png
-  icon: https://www.gin-vue-admin.com/favicon.ico
+- title: CSDN
+  url: https://www.csdn.net/
+  cover: https://g.csdnimg.cn/static/logo/favicon32.ico
+  icon: https://g.csdnimg.cn/static/logo/favicon32.ico
   
-- title: LearnKu
-  url: https://learnku.com/
-  cover: https://image.codepzj.cn/image/202412171146466.png
-  icon: https://learnku.com/favicon.ico
+- title: 掘金
+  url: https://juejin.cn
+  cover: https://lf-web-assets.juejin.cn/obj/juejin-web/xitu_juejin_web/6c61ae65d1c41ae8221a670fa32d05aa.svg
+  icon: https://lf-web-assets.juejin.cn/obj/juejin-web/xitu_juejin_web/6c61ae65d1c41ae8221a670fa32d05aa.svg
 
-- title: 看云
-  url: https://www.kancloud.cn/
-  cover: https://image.codepzj.cn/image/202412171148304.png
-  icon: https://www.kancloud.cn/favicon.ico
+- title: Github
+  url: https://github.com
+  cover: http://bucket.alan.org.cn/blog/2026/01/17/18-40-38-603acd083c6e628cda0184b6b0fcef21-625567.png
+  icon: http://bucket.alan.org.cn/blog/2026/01/17/18-40-38-603acd083c6e628cda0184b6b0fcef21-625567.png
+

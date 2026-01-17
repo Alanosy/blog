@@ -1008,7 +1008,191 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
 ```
 
-Comining soon...
+## TaskQueue
+
+任务队列中的Task的3种典型场景
+
+1. 自定义普通任务：该任务是提交到taskQueue中
+
+   ``` java
+   // 解决方案1 用户查询自定义普通任务
+           ctx.channel().eventLoop().execute(new Runnable() {
+               @Override
+               public void run() {
+                   try {
+                       Thread.sleep(10*1000);
+                       ctx.writeAndFlush(Unpooled.copiedBuffer("testtest",CharsetUtil.UTF_8));
+                   } catch (InterruptedException e) {
+                       System.out.println("发送异常");
+                   }
+               }
+           });
+   ```
+
+   如果上吗代码复制一份改为20秒，但因为是同一个线程，所以会累加为30秒返回
+
+2. 自定义定时任务 : 该任务是提交到scheduleTaskQueue中
+
+   ``` java
+     // 方法2 ：用户自定义定时任务->该任务是提交到scheduleTaskQueue中
+           ctx.channel().eventLoop().schedule(new Runnable() {
+               @Override
+               public void run() {
+                           try {
+                               Thread.sleep(20*1000);
+                               ctx.writeAndFlush(Unpooled.copiedBuffer("testtest",CharsetUtil.UTF_8));
+                           } catch (InterruptedException e) {
+                               System.out.println("发送异常");
+                           }
+               }
+           },5, TimeUnit.SECONDS);
+   
+   ```
+
+   
+
+3. 非当前Reactor线程调用Channel的各种方法
+
+例如推送系统，会根据用户标识，找到对应channel，然后调用write类方法向用户推送消息。其中write会提交到任务队列后被异步消费
+
+方案说明：
+
+1. Netty抽象出两组线程池BossGroup专门接收客户端连接，WorkerGroup专门负责网络的读写
+2. NioEventLoop表示一个不断循环执行处理任务的线程，每个NioEventLoop都有一个selector,用于监听绑定在其上的socket网络通道
+3. NioEventLoop内部采用串行化设计，从消息的读取->解码->处理->编码->发送，始终由IO线程NioEventLoop负责
+
+* NioEventLoopGroup下包含了多个NioEventLoop
+* 每个NioEventLoop中包含一个Selector,一个taskQueue
+* 每个NioEventLoop的Selector上可以注册监听多个NioChannel
+* 每个NioChannel只会绑定在唯一的NioEventLoop上
+* 每个NioChannel都绑定有一个自己的ChannelPipeline
+
+
+
+## Netty心跳检测机制
+
+案例：
+
+1. 服务器超过3秒没有读，就提示读空闲
+2. 服务器超过5秒没有写操作，就提示写空闲
+3. 当服务器超过7秒没有读或写操作时，就提示读写空闲
+
+NettyServer
+
+``` java
+package cn.org.alan.netty.heartbeat;
+
+import cn.org.alan.netty.simple.NettyServerHandler;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 说明：
+ *
+ * @Author Alan
+ * @Version 1.0
+ * @Date 2026/1/17 下午4:10
+ */
+public class MyServer {
+    public static void main(String[] args) {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup,workerGroup)
+                    .channel(NioServerSocketChannel.class) 
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .option(ChannelOption.SO_BACKLOG,128) 
+                    .childOption(ChannelOption.SO_KEEPALIVE,true)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+
+                            ChannelPipeline pipeline = ch.pipeline();
+                            // IdleStateHandler 时Netty提供的处理空闲状态的处理器
+                            // long readerIdleTime 表示多长时间没有读，就会发送一个心跳检测是否连接
+                            // long writerIdleTime 表示多长时间没有写，就会发送一个心跳检测是否连接
+                            // long allIdleTime 表示多长时间即没有读页没有写，就会发送一个心跳检测是否连接
+                            // TimeUnit unit 时间单位
+                            // 当IdleStateHandler触发后，就会传递给管道下一个handler去处理，通过调用触发下一个handler的userEventTiggered
+                            // 在该方法中去处理IdleStateHandler(读空闲，写空闲，读写空闲)
+                            pipeline.addLast(new IdleStateHandler(3,5,7, TimeUnit.SECONDS));
+                            // 加入一个对空闲检测进一步处理的handler（自定义)
+                            pipeline.addLast(new MyserverHandler());
+                        }
+                    }); 
+
+            ChannelFuture sync = bootstrap.bind(7000).sync();
+            sync.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+}
+```
+
+NettyHandler
+
+``` java
+package cn.org.alan.netty.heartbeat;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
+
+/**
+ * 说明：
+ *
+ * @Author Alan
+ * @Version 1.0
+ * @Date 2026/1/17 下午4:21
+ */
+public class MyserverHandler extends ChannelInboundHandlerAdapter {
+    /**
+     *
+     * @param ctx 上下文
+     * @param evt 事件
+     * @throws Exception
+     */
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if(evt instanceof IdleStateEvent){
+            // 将evt向下转型 IdleStateHandler
+            IdleStateEvent event = (IdleStateEvent) evt;
+            String  eventType = null;
+            switch (event.state()){
+                case READER_IDLE :
+                    eventType = "读空闲";
+                    break;
+                case WRITER_IDLE:
+                    eventType = "写空闲";
+                    break;
+                case ALL_IDLE:
+                    eventType = "读写空闲";
+                    break;
+            }
+            System.out.println(ctx.channel().remoteAddress() + "--超时事件发生--"+eventType);
+        }
+        super.userEventTriggered(ctx, evt);
+    }
+}
+```
+
+## WebSocket长连接
+
+![img]()
 
 
 
