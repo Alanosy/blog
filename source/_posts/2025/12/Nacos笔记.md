@@ -129,7 +129,7 @@ public RestTemplate getRestTemplate(){
 
 ### Nacos服务注册中心对比提升
 
-![截屏2025-12-23 下午10.18.42](http://bucket.alan.org.cn/blog/截屏2025-12-23 下午10.18.42.png)
+![截屏2025-12-23 下午10.18.42](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-fa73c0ce03211a437202f4b30efbd852-3dd83e.png)
 
 * 何时选何种模式
   * 如果不需要存储服务级别的信息且服务实例是通过nacos-client注册，并能够保持心跳上报，那么就可以选择AP模式。当前主流的服务如 Spring cloud 和 Dubbo 服务，都适用于AP模式，AP模式为了服务的可能性而减弱了一致性，因此AP模式下只支持注册临时实例。
@@ -272,15 +272,15 @@ dataid的格式为
 # ${spring.application.name}-${spring.profile.active}.${spring.cloud.nacos.config.file-extension}
 ```
 
-![img](http://bucket.alan.org.cn/blog/F03F3150-616D-4B55-A5D4-1761B178D249.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-acdc7daab260f5dd54f04ef1e871ac7c-787bb1.png)
 
-![img](http://bucket.alan.org.cn/blog/3F2CF3AF-4307-41EE-8514-225A2F3B7162.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-c68c832130b1d098a45b8923eed58465-a1c9a1.png)
 
-![img](http://bucket.alan.org.cn/blog/141E85C1-486B-4E6D-B8C1-CCD3F42B023A.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-a469d6486f42e573040d1e5ebfdc9fd3-2357d0.png)
 
 ### Nacos之命名空间、分组和DataID三者之间的关系
 
-![img](http://bucket.alan.org.cn/blog/CF4DD26E-06C0-4A8F-8342-2AE8D999403C.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-8378ede4ed8e393c6dd6227a06d16446-59deee.png)
 
  默认情况：
 
@@ -306,14 +306,14 @@ Service就是微服务；一个Service可以包含多个Cluster（集群），Na
 
 默认空间+默认分组+新建dev和test两个DataID
 
-![img](http://bucket.alan.org.cn/blog/93B00EC4-8E81-474E-90DE-3B24688A01A3.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-e0a0c00b1fbe2df779566b99d9960979-78dc6c.png)
 
 ### Nacos之Group分组方案
 
 * 在配置congfig下面添加group参数，添加**分组名称**
 * 分组名称是创建配置的时候手动填写的
 
-![img](http://bucket.alan.org.cn/blog/F231D363-C051-4D03-BC76-0E0EB6AA4201.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-7c4c3175a81d575fc6365504efba9cf5-c52a69.png)
 
 ``` yml
 # nacos配置
@@ -335,7 +335,7 @@ spring:
 
 ### Nacos之NameSpace命名空间
 
-![img](http://bucket.alan.org.cn/blog/717CCEB8-A11C-402F-B831-F95079387384.png)
+![img](http://bucket.alan.org.cn/blog/2026/01/17/12-51-35-4a6929593a04bbe094fab466a502b2b4-2b60cf.png)
 
 * 在配置congfig下面添加namespace参数，添加**命名空间的id**
 * 命名空间在左侧菜单栏点击命名空间创建
