@@ -43,13 +43,13 @@ Java支持3种网络编程模型 /IO模型:BIO、NIO、AIO
 
   一个连接一个线程，容易造成不必要的线程开销
 
-  ![截屏2025-12-24 下午9.53.50](../../../assets/images/Netty笔记/截屏2025-12-24 下午9.53.50.png)
+  ![截屏2025-12-24 下午9.53.50](http://bucket.alan.org.cn/blog/截屏2025-12-24 下午9.53.50.png)
 
 * NIO 同步非阻塞
 
   一个线程处理多个请求（连接），客户端发送的请求都会注册到多路复用器上，多路复用器轮询到连接有I/O的请求就进行处理
 
-![截屏2025-12-24 下午9.54.07](../../../assets/images/Netty笔记/截屏2025-12-24 下午9.54.07.png)
+![截屏2025-12-24 下午9.54.07](http://bucket.alan.org.cn/blog/截屏2025-12-24 下午9.54.07.png)
 
 * AIO 异步非阻塞，AIO引入了异步通道的概念，采用了Proactor模型，简化了程序编写，有效的请求才启动线程，它的特点是先由操作系统完成后才通知服务端程序启动线程去处理，一般适用于连接数较多且连接时间较长的应用。
 
@@ -402,7 +402,7 @@ public abstract class Selector implements Closeable
 
 ### SelectionKey在NIO体系
 
-![截屏2025-12-26 下午8.55.14](../../../assets/images/Netty笔记/截屏2025-12-26 下午8.55.14.png)
+![截屏2025-12-26 下午8.55.14](http://bucket.alan.org.cn/blog/截屏2025-12-26 下午8.55.14.png)
 
 1. 当客户端连接时，会通过ServerSocketChannel得到SocketChannel
 2. 将socketChannel注册到Selector，register(Selector sel,int ops),一个Selector可以注解多个SocketChannel
@@ -602,7 +602,7 @@ public abstract class SelectionKey{
 * 开发工作量和难度都非常大:例如客户端面临断连重连、网络闪断、半包读写、失3)败缓存、网络拥塞和异常流的处理等等。
 * JDK NIO 的 Bug:例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。直到 JDK 1.7 版本该问题仍旧存在，没有被根本解决。
 
-![截屏2026-01-01 下午8.36.18](../../../assets/images/Netty笔记/截屏2026-01-01 下午8.36.18.png)
+![截屏2026-01-01 下午8.36.18](http://bucket.alan.org.cn/blog/截屏2026-01-01 下午8.36.18.png)
 
 * Netty是由 JBOSS 提供的一个 Java开源框架。
 * Netty 提供异步的、基于事件驱动的网络应用程序框架，用以快速开发高性能、高可靠性的网络10程序
@@ -657,7 +657,7 @@ Netty 对 JDK 自带的 NIO 的 API进行了封装，解决了上述问题。
 
 总结：传统阻塞I/O服务模型，无法适应大并发的场景
 
-![截屏2026-01-01 下午9.12.22](../../../assets/images/Netty笔记/截屏2026-01-01 下午9.12.22.png)
+![截屏2026-01-01 下午9.12.22](http://bucket.alan.org.cn/blog/截屏2026-01-01 下午9.12.22.png)
 
 ### Reactor模型
 
@@ -666,7 +666,7 @@ Netty 对 JDK 自带的 NIO 的 API进行了封装，解决了上述问题。
 1. 基于 I/O 复用模型:多个连接共用一个阻塞对象，应用程序只需要在一个阻塞对象等待，无需阻塞等待所有连接。当某个连接有新的数据可以处理时，操作系统通知应用程序，线程从阻塞状态返回，开始进行业务处理
 2. 基于线程池复用线程资源:不必再为每个连接创建线程，将连接完成后的业务处理任务分配给线程进行处理，一个线程可以处理多个连接的业务。
 
-![截屏2026-01-01 下午9.22.05](../../../assets/images/Netty笔记/截屏2026-01-01 下午9.22.05.png)
+![截屏2026-01-01 下午9.22.05](http://bucket.alan.org.cn/blog/截屏2026-01-01 下午9.22.05.png)
 
 解决了传统IO模型的以下问题
 
@@ -675,7 +675,7 @@ Netty 对 JDK 自带的 NIO 的 API进行了封装，解决了上述问题。
 
 Reactor又叫1. 反应器模型 2.分发者模型 3.统治者模型 
 
-![截屏2026-01-01 下午9.24.31](../../../assets/images/Netty笔记/截屏2026-01-01 下午9.24.31.png)
+![截屏2026-01-01 下午9.24.31](http://bucket.alan.org.cn/blog/截屏2026-01-01 下午9.24.31.png)
 
 I/O复用结合线程池，就是Reactor模型基本设计思想
 
@@ -700,7 +700,7 @@ I/O复用结合线程池，就是Reactor模型基本设计思想
 
 ## 单 Reactor 单线程
 
-![截屏2026-01-02 下午2.05.18](../../../assets/images/Netty笔记/截屏2026-01-02 下午2.05.18.png)
+![截屏2026-01-02 下午2.05.18](http://bucket.alan.org.cn/blog/截屏2026-01-02 下午2.05.18.png)
 
 1. Select 是前面 I/O 复用模型介绍的标准网络编程 API，可以实现应用程序通过一个阻塞对象监听多路连接请求
 2. Reactor 对象通过 Select 监控客户端请求事件，收到事件后通过 Dispatch 进行分发
@@ -727,7 +727,7 @@ I/O复用结合线程池，就是Reactor模型基本设计思想
 
 ## 单Reactor多线程
 
-![截屏2026-01-02 下午2.43.46](../../../assets/images/Netty笔记/截屏2026-01-02 下午2.43.46.png)
+![截屏2026-01-02 下午2.43.46](http://bucket.alan.org.cn/blog/截屏2026-01-02 下午2.43.46.png)
 
 方案说明
 
@@ -746,7 +746,7 @@ I/O复用结合线程池，就是Reactor模型基本设计思想
 
 ## 主从Reactor多线程
 
-![截屏2026-01-02 下午3.05.47](../../../assets/images/Netty笔记/截屏2026-01-02 下午3.05.47.png)
+![截屏2026-01-02 下午3.05.47](http://bucket.alan.org.cn/blog/截屏2026-01-02 下午3.05.47.png)
 
 **工作原理示意：**
 
@@ -765,7 +765,7 @@ I/O复用结合线程池，就是Reactor模型基本设计思想
 
 ## Netty 模型
 
-![截屏2026-01-16 下午11.33.45](../../../assets/images/Netty笔记/截屏2026-01-16 下午11.33.45.png)
+![截屏2026-01-16 下午11.33.45](http://bucket.alan.org.cn/blog/截屏2026-01-16 下午11.33.45.png)
 
 1. Netty抽象出两组线程池BossGroup专门接收客户端连接，WorkerGroup专门负责网络的读写
 2. BossGroup和WorkerGroup类型都是NioEventLoopGroup
@@ -1009,4 +1009,3 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 ```
 
 Comining soon...
-
