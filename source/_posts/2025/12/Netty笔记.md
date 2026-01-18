@@ -1192,7 +1192,124 @@ public class MyserverHandler extends ChannelInboundHandlerAdapter {
 
 ## WebSocket长连接
 
-![img]()
+NettyServer
 
+``` java
+package cn.org.alan.netty.websocket;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 说明：
+ *
+ * @Author Alan
+ * @Version 1.0
+ * @Date 2026/1/17 下午4:10
+ */
+public class MyServer {
+    public static void main(String[] args) {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+
+                            ChannelPipeline pipeline = ch.pipeline();
+                            // 因为基于http协议，使用http的编码和解码器
+                            pipeline.addLast(new HttpServerCodec());
+                            // 是以块方式写，添加CHunkedWriteHandler处理器
+                            pipeline.addLast(new ChunkedWriteHandler());
+                            // 因为http数据在传输过程中时分段的，HttpObjectAggregator 就是可以将多个段聚合
+                            // 这就是为什么，当浏览器发送大量数据时，就会发出多长http请求
+                            pipeline.addLast(new HttpObjectAggregator(8192));
+                            // 对应websocket它的数据时以帧(frame)形式传递
+                            // 可以看到WebSocketFrame下面有6个子类
+                            // 浏览器请求时，ws://localhost:7000/xxx 表示请求到url
+                            pipeline.addLast(new WebSocketServerProtocolHandler("/hello"));
+                            pipeline.addLast(new MyserverHandler());
+                        }
+                    });
+
+            ChannelFuture sync = bootstrap.bind(7000).sync();
+            sync.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+}
+
+```
+
+NettyHandler
+
+``` java
+package cn.org.alan.netty.websocket;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.timeout.IdleStateEvent;
+
+import java.time.LocalDate;
+
+/**
+ * 说明：
+ *
+ * @Author Alan
+ * @Version 1.0
+ * @Date 2026/1/17 下午4:21
+ */
+public class MyserverHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
+        System.out.println("服务端收到消息:"+msg.text() );
+        // 回复浏览器
+        ctx.channel().writeAndFlush(new TextWebSocketFrame("服务器事件+"+ LocalDate.now()));
+    }
+    // 当web客户端连接后，触发方法
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("handlerAdded被调用"+ctx.channel().id().asLongText());
+        System.out.println("handlerAdded被调用"+ctx.channel().id().asShortText());
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("handlerRemoved被调用"+ctx.channel().id().asShortText());
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println("异常发生");
+        ctx.close();
+    }
+}
+
+```
 
