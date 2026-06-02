@@ -181,3 +181,8 @@ hexo_safego:
 hexo_graph:
   theme: "light"
   echarts_js: "/vendor/js/echarts.min.js"
+
+deploy:
+  type: git
+  repo: root@8.137.151.232:/data/repo/hexo.git
+  branch: master

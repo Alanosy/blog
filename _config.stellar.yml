@@ -174,7 +174,7 @@ footer:
       - "[开往](https://www.travellings.cn/go-by-clouds.html)"
       - "[异次元之旅](https://travel.moe/go)"
   content: | # 支持 Markdown 格式
-    本站由 [{author.name}](/) 使用 [{theme.name} {theme.version}]({theme.tree}) 主题创建。
+    本站由 [{author.name}](/) 使用 [{theme.name} {theme.version}]({theme.tree}) 主题创建。<a href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备2026020593号</a>
     本博客所有文章除特别声明外，均采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议，转载请注明出处。
 
 copycode:
@@ -196,23 +196,23 @@ copycode:
 #     site: Alan
 #     darkMode: auto
 # 评论
-comments:
-  service: giscus
-  giscus:
-    src: https://giscus.app/client.js
-    data-repo: Alanosy/blog 
-    data-repo-id: R_kgDONmjawA 
-    data-category: Announcements
-    data-category-id: DIC_kwDONmjawM4ClyM5
-    data-mapping: pathname
-    data-strict: 0
-    data-reactions-enabled: 1
-    data-emit-metadata: 0
-    data-input-position: top # top, bottom
-    data-theme: preferred_color_scheme
-    data-lang: zh-CN
-    data-loading: lazy
-    crossorigin: anonymous
+# comments:
+#   service: giscus
+#   giscus:
+#     src: https://giscus.app/client.js
+#     data-repo: Alanosy/blog 
+#     data-repo-id: R_kgDONmjawA 
+#     data-category: Announcements
+#     data-category-id: DIC_kwDONmjawM4ClyM5
+#     data-mapping: pathname
+#     data-strict: 0
+#     data-reactions-enabled: 1
+#     data-emit-metadata: 0
+#     data-input-position: top # top, bottom
+#     data-theme: preferred_color_scheme
+#     data-lang: zh-CN
+#     data-loading: lazy
+#     crossorigin: anonymous
 
 # 文章搜索
 search:
