@@ -196,23 +196,23 @@ copycode:
 #     site: Alan
 #     darkMode: auto
 # 评论
-# comments:
-#   service: giscus
-#   giscus:
-#     src: https://giscus.app/client.js
-#     data-repo: Alanosy/blog 
-#     data-repo-id: R_kgDONmjawA 
-#     data-category: Announcements
-#     data-category-id: DIC_kwDONmjawM4ClyM5
-#     data-mapping: pathname
-#     data-strict: 0
-#     data-reactions-enabled: 1
-#     data-emit-metadata: 0
-#     data-input-position: top # top, bottom
-#     data-theme: preferred_color_scheme
-#     data-lang: zh-CN
-#     data-loading: lazy
-#     crossorigin: anonymous
+comments:
+  service: giscus
+  giscus:
+    src: https://giscus.app/client.js
+    data-repo: Alanosy/blog 
+    data-repo-id: R_kgDONmjawA 
+    data-category: Announcements
+    data-category-id: DIC_kwDONmjawM4ClyM5
+    data-mapping: pathname
+    data-strict: 0
+    data-reactions-enabled: 1
+    data-emit-metadata: 0
+    data-input-position: top # top, bottom
+    data-theme: preferred_color_scheme
+    data-lang: zh-CN
+    data-loading: lazy
+    crossorigin: anonymous
 
 # 文章搜索
 search:
